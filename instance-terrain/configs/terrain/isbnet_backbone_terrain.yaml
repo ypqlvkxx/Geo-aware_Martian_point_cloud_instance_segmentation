@@ -1,0 +1,107 @@
+#没有熵正则化
+model:
+  in_feat: 66
+  hid_feat: 32
+  num_layers: 4
+  numclass: 6
+  num_points: 40960    # Number of input points
+  sub_grid_size : 0.06  # preprocess_parameter
+  train_steps: 500  # Number of steps per epochs
+  val_steps: 100  # Number of validation steps per epoch
+  d_out : [16, 64, 128, 256]  # feature dimension
+  rep_d_out : [16, 64, 128, 256]  # feature dimension
+  noise_init: 3.5  # noise initial parameter
+  
+  channels: 32
+  num_blocks: 7
+  semantic_classes: 6
+  instance_classes: 6
+  sem2ins_classes: []
+  semantic_only: True
+  with_coords: True
+  ignore_label: -100
+  voxel_scale: 0.01
+  use_spp_pool: False
+  filter_bg_thresh: 0.1
+  iterative_sampling: False
+  instance_head_cfg:
+    dec_dim: 64
+    n_sample_pa1: 2048
+    n_queries: 256
+    radius_scale: 30
+    radius: 0.4
+    neighbor: 16
+  test_cfg:
+    x4_split: False
+    logit_thresh: 0.0
+    score_thresh: 0.2
+    npoint_thresh: 10
+    type_nms: 'matrix'
+    topk: 100
+
+  fixed_modules: []
+
+data:
+  train:
+    numclass: 6
+    type: 'terrain'
+    data_root: ''
+    prefix: ['train']
+    suffix: '_inst_nostuff.pth'
+    training: True
+    repeat: 1
+    num_layers: 4
+    sub_grid_size : 0.06  # preprocess_parameter
+    k_n : 32  # KNN
+    sub_sampling_ratio: [4, 4, 4, 4]
+
+    voxel_cfg:
+      scale: 3
+      spatial_shape: [128, 512]
+      max_npoint: 250000
+      min_npoint: 5000
+    
+
+  test:
+    numclass: 6
+    type: 'terrain'
+    data_root: ''
+    prefix: ['test']
+    suffix: '_inst_nostuff.pth'
+    training: False
+    num_layers: 4
+    sub_grid_size : 0.06  # preprocess_parameter
+    k_n : 32  # KNN
+    sub_sampling_ratio: [4, 4, 4, 4]
+    voxel_cfg:
+      scale: 3
+      spatial_shape: [128, 512]
+      max_npoint: 250000
+      min_npoint: 5000
+
+
+dataloader:
+  train:
+    batch_size: 8
+    num_workers: 2
+  test:
+    batch_size: 1
+    num_workers: 1
+
+optimizer:
+  type: 'AdamW'
+  lr: 0.02
+  weight_decay: 0.0001
+
+save_cfg:
+  semantic: True
+  instance: False
+  nmc_clusters: False
+
+
+fp16: False
+epochs: 200
+step_epoch: 20
+save_freq: 3
+pretrain: ''
+work_dir: ''
